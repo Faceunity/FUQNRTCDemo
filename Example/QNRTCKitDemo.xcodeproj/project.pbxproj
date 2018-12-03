@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0B72074D21A7E15E000B5E79 /* FUAPIDemoBar.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BA15AA1212ABF69005D685C /* FUAPIDemoBar.framework */; };
+		0B72074E21A7E15E000B5E79 /* FUAPIDemoBar.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0BA15AA1212ABF69005D685C /* FUAPIDemoBar.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		0B72075021A7E167000B5E79 /* ReplayKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B72074921A7E0B8000B5E79 /* ReplayKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		0BA15A84212ABEC0005D685C /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BA15A83212ABEC0005D685C /* Accelerate.framework */; };
 		0BA15A86212ABEC6005D685C /* libstdc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BA15A85212ABEC6005D685C /* libstdc++.tbd */; };
 		0BA15AAC212ABF69005D685C /* libnama.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BA15A8D212ABF69005D685C /* libnama.a */; };
@@ -16,7 +19,6 @@
 		0BA15AB0212ABF69005D685C /* face_beautification.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0BA15A92212ABF69005D685C /* face_beautification.bundle */; };
 		0BA15AB1212ABF69005D685C /* fxaa.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0BA15A93212ABF69005D685C /* fxaa.bundle */; };
 		0BA15AB2212ABF69005D685C /* v3.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0BA15A94212ABF69005D685C /* v3.bundle */; };
-		0BA15ABA212ABF69005D685C /* FUAPIDemoBar.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BA15AA1212ABF69005D685C /* FUAPIDemoBar.framework */; };
 		0BA15ABB212ABF69005D685C /* FUManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BA15AA3212ABF69005D685C /* FUManager.m */; };
 		0BA15ABC212ABF69005D685C /* fengya_ztt_fu.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0BA15AA5212ABF69005D685C /* fengya_ztt_fu.bundle */; };
 		0BA15ABD212ABF69005D685C /* hudie_lm_fu.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0BA15AA6212ABF69005D685C /* hudie_lm_fu.bundle */; };
@@ -26,7 +28,6 @@
 		0BA15AC1212ABF69005D685C /* yazui.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0BA15AAA212ABF69005D685C /* yazui.bundle */; };
 		0BA15AC2212ABF69005D685C /* yuguan.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0BA15AAB212ABF69005D685C /* yuguan.bundle */; };
 		0BA15AC3212ABFA2005D685C /* FUAPIDemoBar.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BA15AA1212ABF69005D685C /* FUAPIDemoBar.framework */; };
-		0BA15AC4212ABFA2005D685C /* FUAPIDemoBar.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0BA15AA1212ABF69005D685C /* FUAPIDemoBar.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5029EC5434AD3A66D8A128FD /* libPods-QNRTCKitDemo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D8BB45036542B95EF652274E /* libPods-QNRTCKitDemo.a */; };
 		B003EE9320E6130A009FC2C5 /* QRDMicrophoneSource.m in Sources */ = {isa = PBXBuildFile; fileRef = B003EE9020E61309009FC2C5 /* QRDMicrophoneSource.m */; };
 		B003EE9420E6130A009FC2C5 /* QRDScreenRecorderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B003EE9220E61309009FC2C5 /* QRDScreenRecorderViewController.m */; };
@@ -54,13 +55,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		B04AF0921F9652FB009BAFEF /* Embed Frameworks */ = {
+		0B72074F21A7E15E000B5E79 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				0BA15AC4212ABFA2005D685C /* FUAPIDemoBar.framework in Embed Frameworks */,
+				0B72074E21A7E15E000B5E79 /* FUAPIDemoBar.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -68,6 +69,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0B72074921A7E0B8000B5E79 /* ReplayKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ReplayKit.framework; path = System/Library/Frameworks/ReplayKit.framework; sourceTree = SDKROOT; };
 		0BA15A83212ABEC0005D685C /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		0BA15A85212ABEC6005D685C /* libstdc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libstdc++.tbd"; path = "usr/lib/libstdc++.tbd"; sourceTree = SDKROOT; };
 		0BA15A88212ABF69005D685C /* authpack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = authpack.h; sourceTree = "<group>"; };
@@ -141,9 +143,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0B72075021A7E167000B5E79 /* ReplayKit.framework in Frameworks */,
 				0BA15A86212ABEC6005D685C /* libstdc++.tbd in Frameworks */,
+				0B72074D21A7E15E000B5E79 /* FUAPIDemoBar.framework in Frameworks */,
 				0BA15AC3212ABFA2005D685C /* FUAPIDemoBar.framework in Frameworks */,
-				0BA15ABA212ABF69005D685C /* FUAPIDemoBar.framework in Frameworks */,
 				0BA15A84212ABEC0005D685C /* Accelerate.framework in Frameworks */,
 				0BA15AAC212ABF69005D685C /* libnama.a in Frameworks */,
 				B0769C751FBADAFD0051F9C2 /* GLKit.framework in Frameworks */,
@@ -226,6 +229,7 @@
 		B04AF0891F9652A6009BAFEF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0B72074921A7E0B8000B5E79 /* ReplayKit.framework */,
 				0BA15A85212ABEC6005D685C /* libstdc++.tbd */,
 				0BA15A83212ABEC0005D685C /* Accelerate.framework */,
 				B0B4BA491FD31A3D00A5ACA0 /* libz.tbd */,
@@ -316,12 +320,12 @@
 			buildPhases = (
 				CD494D042136CE4900D4966C /* unzip */,
 				FFF9D04D8766618C173CF452 /* [CP] Check Pods Manifest.lock */,
-				942A63FB5AAA43E9BE0ADEF9 /* Upload Bugsnag dSYM */,
 				B0C660501F94F98300999C9F /* Sources */,
 				B0C660511F94F98300999C9F /* Frameworks */,
 				B0C660521F94F98300999C9F /* Resources */,
-				B04AF0921F9652FB009BAFEF /* Embed Frameworks */,
 				45FBCD51C47E0F48596AE5CC /* [CP] Embed Pods Frameworks */,
+				942A63FB5AAA43E9BE0ADEF9 /* Upload Bugsnag dSYM */,
+				0B72074F21A7E15E000B5E79 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -455,7 +459,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n#!/bin/sh\ncd QNRTCKitDemo/Faceunity/FaceUnity-SDK-iOS\nfilename=libnama.a\nzipname=libnama.zip\nmdcode=$(md5 $filename)\n\n#如果md5验证失败，且libnama.zip存在,则直接解压\nif ! [ ${mdcode##*=}x = \"4d0b3937ad060c15af8adb5acffe526f\"x ] && [ -f \"$zipname\" ];\nthen\nrm -f $filename\nunzip $zipname\nmdcode=$(md5 $filename)\n\nif [ ${mdcode##*=}x = \"4d0b3937ad060c15af8adb5acffe526f\"x ]; then\necho \"ssss\"\nrm -f $zipname\nelse\necho \"fffff\"\nrm -f $filename\nfi\nfi\n";
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n#!/bin/sh\ncd QNRTCKitDemo/Faceunity/FaceUnity-SDK-iOS\nfilename=libnama.a\nzipname=libnama.zip\nmdcode=$(md5 $filename)\n\n#如果md5验证失败，且libnama.zip存在,则直接解压\nif ! [ ${mdcode##*=}x = \"013defd8ecaf81c7158c97ad4d63ba6d\"x ] && [ -f \"$zipname\" ];\nthen\nrm -f $filename\nunzip $zipname\nmdcode=$(md5 $filename)\n\nif [ ${mdcode##*=}x = \"013defd8ecaf81c7158c97ad4d63ba6d\"x ]; then\necho \"ssss\"\nrm -f $zipname\nelse\necho \"fffff\"\nrm -f $filename\nfi\nfi\n";
 		};
 		FFF9D04D8766618C173CF452 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -629,6 +633,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -647,7 +652,7 @@
 					"$(PROJECT_DIR)/../QNRTCKit/**",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/QNRTCKitDemo/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/../QNRTCKit/**",
@@ -674,6 +679,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 35A6KD62ZJ;
@@ -691,7 +697,7 @@
 					"$(PROJECT_DIR)/../QNRTCKit/**",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/QNRTCKitDemo/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/../QNRTCKit/**",
