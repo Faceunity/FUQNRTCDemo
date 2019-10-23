@@ -318,8 +318,8 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B0C6606D1F94F98300999C9F /* Build configuration list for PBXNativeTarget "QNRTCKitDemo" */;
 			buildPhases = (
-				CD494D042136CE4900D4966C /* unzip */,
 				FFF9D04D8766618C173CF452 /* [CP] Check Pods Manifest.lock */,
+				E3DA488323602400007CF6E3 /* unzip */,
 				B0C660501F94F98300999C9F /* Sources */,
 				B0C660511F94F98300999C9F /* Frameworks */,
 				B0C660521F94F98300999C9F /* Resources */,
@@ -443,7 +443,7 @@
 			shellScript = "fork do\n  Process.setsid\n  STDIN.reopen(\"/dev/null\")\n  STDOUT.reopen(\"/dev/null\", \"a\")\n  STDERR.reopen(\"/dev/null\", \"a\")\n\n  require 'shellwords'\n\n  Dir[\"#{ENV[\"DWARF_DSYM_FOLDER_PATH\"]}/*/Contents/Resources/DWARF/*\"].each do |dsym|\n    system(\"curl -F dsym=@#{Shellwords.escape(dsym)} -F projectRoot=#{Shellwords.escape(ENV[\"PROJECT_DIR\"])} https://upload.bugsnag.com/\")\n  end\nend\n";
 			showEnvVarsInLog = 0;
 		};
-		CD494D042136CE4900D4966C /* unzip */ = {
+		E3DA488323602400007CF6E3 /* unzip */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -459,7 +459,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n#!/bin/sh\ncd QNRTCKitDemo/Faceunity/FaceUnity-SDK-iOS\nfilename=libnama.a\nzipname=libnama.zip\nmdcode=$(md5 $filename)\n\n#如果md5验证失败，且libnama.zip存在,则直接解压\nif ! [ ${mdcode##*=}x = \"013defd8ecaf81c7158c97ad4d63ba6d\"x ] && [ -f \"$zipname\" ];\nthen\nrm -f $filename\nunzip $zipname\nmdcode=$(md5 $filename)\n\nif [ ${mdcode##*=}x = \"013defd8ecaf81c7158c97ad4d63ba6d\"x ]; then\necho \"ssss\"\nrm -f $zipname\nelse\necho \"fffff\"\nrm -f $filename\nfi\nfi\n";
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n#!/bin/sh/\ncd QNRTCKitDemo/FaceUnity/FaceUnity-SDK-iOS\nfilename=libnama.a\nzipname=libnama.zip\n\nif [ -f \"$zipname\" ];\nthen\nrm -f $filename\nunzip $zipname\nrm -f $zipname\nfi\n";
 		};
 		FFF9D04D8766618C173CF452 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -652,7 +652,7 @@
 					"$(PROJECT_DIR)/../QNRTCKit/**",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/QNRTCKitDemo/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/../QNRTCKit/**",
@@ -697,7 +697,7 @@
 					"$(PROJECT_DIR)/../QNRTCKit/**",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/QNRTCKitDemo/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/../QNRTCKit/**",
