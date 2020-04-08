@@ -364,7 +364,9 @@ FUAPIDemoBarDelegate
 
 - (void)beautyAction:(UIButton *)beautyButton {
     beautyButton.selected = !beautyButton.selected;
-    [self.session setBeautifyModeOn:beautyButton.selected];
+//    [self.session setBeautifyModeOn:beautyButton.selected];
+    self.session.sessionPreset = beautyButton.selected ? AVCaptureSessionPreset640x480:AVCaptureSessionPreset1280x720;
+    
 }
 
 - (void)conferenceAction:(UIButton *)conferenceButton {
