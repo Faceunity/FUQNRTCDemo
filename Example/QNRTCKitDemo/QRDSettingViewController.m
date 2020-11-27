@@ -22,6 +22,10 @@ QRDSettingViewDelegate
 @property (nonatomic, strong) NSArray *configDicArray;
 @property (nonatomic, strong) NSDictionary *configDic;
 
+/**
+ 判断是否受英文状态下的自动补全影响（带来了特殊字符）
+ */
+@property (nonatomic, assign) BOOL resultCorrect;
 @end
 
 @implementation QRDSettingViewController
@@ -51,14 +55,27 @@ QRDSettingViewDelegate
 }
 
 - (void)setupSettingView {
-    _configDicArray = @[@{@"VideoSize":NSStringFromCGSize(CGSizeMake(288, 352)), @"FrameRate":@20},
-                   @{@"VideoSize":NSStringFromCGSize(CGSizeMake(480, 640)), @"FrameRate":@20},
-                   @{@"VideoSize":NSStringFromCGSize(CGSizeMake(544, 960)), @"FrameRate":@20},
-                   @{@"VideoSize":NSStringFromCGSize(CGSizeMake(720, 1280)), @"FrameRate":@20}];
-    _configArray = @[@"288x352、20fps",
-                     @"480x640、20fps",
-                     @"544x960、20fps",
-                     @"720x1280、20fps"];
+    /**
+    * 视频的分辨率，码率和帧率设置会影响到连麦质量；更高的分辨率和帧率也就意味着需要更大的码率和更好的网络环境。
+    *
+    * 首先，建议您根据实际产品情况选择分辨率，在不超过视频源分辨率的情况下更高的分辨率对应着更好的质量，
+    * 在具体数值上，建议您根据下表或者常见的视频分辨率来做设置；
+    * 然后，可以根据您的实际情况来选择帧率，帧率越高更能表现运动画面效果；通常设置为25或者30即可；
+    * 最后，选择合适的码率设置，如果实际场景中有运动情况较多，可以参考下表中选择上限值。
+    *
+    * 如果您需要的分辨率或者帧率不在下表中，可以按比例来推算出一个合适的码率值，如:
+    * A 分辨率 x B 帧率  =  2000kbps
+    * 则：
+    * A / 2 分辨率 x B 帧率 = 1000kbps
+    */
+    _configDicArray = @[@{@"VideoSize":NSStringFromCGSize(CGSizeMake(288, 352)), @"FrameRate":@15, @"Bitrate":@(400*1000)},
+                   @{@"VideoSize":NSStringFromCGSize(CGSizeMake(480, 640)), @"FrameRate":@20, @"Bitrate":@(800*1000) },
+                   @{@"VideoSize":NSStringFromCGSize(CGSizeMake(544, 960)), @"FrameRate":@25, @"Bitrate":@(1200*1000)},
+                   @{@"VideoSize":NSStringFromCGSize(CGSizeMake(720, 1280)), @"FrameRate":@30, @"Bitrate":@(2000*1000)}];
+    _configArray = @[@"288x352、15fps、400kbps",
+                     @"480x640、20fps、800kbps",
+                     @"544x960、25fps、1200kbps",
+                     @"720x1280、30fps、2000kbps"];
     NSInteger selectedIndex;
     _configDic = [self getValueForKey:QN_SET_CONFIG_KEY];
     if ([_configDicArray containsObject:_configDic]) {
@@ -119,17 +136,26 @@ QRDSettingViewDelegate
 }
 
 - (void)saveAction:(UIButton *)save {
+    [self.view endEditing:YES];
     
     BOOL userIdAvailable = NO;
     _setingView.userTextField.text = [_setingView.userTextField.text stringByReplacingOccurrencesOfString:@" " withString:@""];
-    if ([self checkStringLengthZero:_setingView.userTextField.text]) {
-        [self showAlertWithMessage:@"昵称未填写，无法保存！"];
-    } else{
-        if ([self checkUserId:_setingView.userTextField.text]) {
-            userIdAvailable = YES;
+    
+    NSString *userIdText = [self getValueForKey:QN_USER_ID_KEY];
+    
+    // userTextField 内容发生变更，则检验
+    if (![userIdText isEqualToString:_setingView.userTextField.text]) {
+        if ([self checkStringLengthZero:_setingView.userTextField.text]) {
+            [self showAlertWithMessage:@"昵称未填写，无法保存！"];
         } else{
-            [self showAlertWithMessage:@"请按要求正确填写昵称！"];
+            if ([self checkUserId:_setingView.userTextField.text] && _resultCorrect) {
+                userIdAvailable = YES;
+            } else{
+                [self showAlertWithMessage:@"请按要求正确填写昵称！"];
+            }
         }
+    } else{
+        userIdAvailable = YES;
     }
     
     _setingView.appIdTextField.text = [_setingView.appIdTextField.text stringByReplacingOccurrencesOfString:@" " withString:@""];
@@ -162,6 +188,22 @@ QRDSettingViewDelegate
 
 - (void)saveValue:(id)value forKey:(NSString *)key {
     [[NSUserDefaults standardUserDefaults] setObject:value forKey:key];
+}
+
+#pragma mark - textField delegate
+- (void)textFieldDidEndEditing:(UITextField *)textField {
+    NSString *text = [textField.text stringByReplacingOccurrencesOfString:@" " withString:@""];
+    _resultCorrect = [self checkUserId:text];
+}
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+    return YES;
+}
+
+#pragma mark --- 键盘回收 ---
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    [textField resignFirstResponder];
+    return YES;
 }
 
 #pragma mark --- 点击空白 ---
