@@ -13,6 +13,9 @@
 #import "QRDUserNameView.h"
 #import "QRDJoinRoomView.h"
 #import "QRDScreenRecorderViewController.h"
+#import "QRDScreenMainViewController.h"
+#import "QRDPureAudioViewController.h"
+#import "QRDPlayerViewController.h"
 
 #define QRD_LOGIN_TOP_SPACE (QRD_iPhoneX ? 140: 100)
 
@@ -25,6 +28,11 @@ UITextFieldDelegate
 @property (nonatomic, strong) UIButton *setButton;
 @property (nonatomic, strong) UIImageView *imageView;
 @property (nonatomic, copy) NSString *userString;
+
+/**
+ 判断是否受英文状态下的自动补全影响（带来了特殊字符）
+ */
+@property (nonatomic, assign) BOOL resultCorrect;
 @end
 
 @implementation QRDLoginViewController
@@ -41,8 +49,8 @@ UITextFieldDelegate
      [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     
     self.view.backgroundColor = QRD_GROUND_COLOR;
-
-    _userString = [[NSUserDefaults standardUserDefaults] objectForKey:@"QN_USER_ID"];
+    
+    _userString = [[NSUserDefaults standardUserDefaults] objectForKey:QN_USER_ID_KEY];
     
     BOOL isStorage = NO;
     if (_userString.length != 0) {
@@ -71,17 +79,29 @@ UITextFieldDelegate
 }
 
 - (void)setupJoinRoomView {
-    _joinRoomView = [[QRDJoinRoomView alloc] initWithFrame:CGRectMake(QRD_SCREEN_WIDTH/2 - 150, QRD_LOGIN_TOP_SPACE, 308, 185)];
+    _resultCorrect = NO;
+    
+    _joinRoomView = [[QRDJoinRoomView alloc] initWithFrame:CGRectMake(QRD_SCREEN_WIDTH/2 - 150, QRD_LOGIN_TOP_SPACE, 308, 310)];
     _joinRoomView.roomTextField.delegate = self;
-    NSString *roomName = [[NSUserDefaults standardUserDefaults] objectForKey:@"QN_ROOM_NAME"];
+    NSString *roomName = [[NSUserDefaults standardUserDefaults] objectForKey:QN_ROOM_NAME_KEY];
     _joinRoomView.roomTextField.text = roomName;
-    [_joinRoomView.joinButton addTarget:self action:@selector(joinAction:) forControlEvents:UIControlEventTouchUpInside];
+    // 直接使用缓存房间名时，不走 textFieldDidEndEditing 影响判断，故先做校验并返回结果
+    _resultCorrect = [self checkRoomName:roomName];
+    [self.view addSubview:_joinRoomView];
+
     _joinRoomView.confButton.selected = YES;
     [_joinRoomView.confButton addTarget:self action:@selector(confButtonClick:) forControlEvents:UIControlEventTouchUpInside];
+    [_joinRoomView.audioCallButton addTarget:self action:@selector(audioCallButtonClick:) forControlEvents:UIControlEventTouchUpInside];
     [_joinRoomView.screenButton addTarget:self action:@selector(screenButtonClick:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:_joinRoomView];
     
-    _setButton = [[UIButton alloc] initWithFrame:CGRectMake(QRD_SCREEN_WIDTH - 36, QRD_LOGIN_TOP_SPACE - 68, 24, 24)];
+    [_joinRoomView.joinButton addTarget:self action:@selector(joinAction:) forControlEvents:UIControlEventTouchUpInside];
+
+    [_joinRoomView.liveButton addTarget:self action:@selector(liveButtonClick:) forControlEvents:UIControlEventTouchUpInside];
+    
+    [_joinRoomView.multiTrackButton addTarget:self action:@selector(multiTrackButtonClick:) forControlEvents:UIControlEventTouchUpInside];
+    
+    _setButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _setButton.frame = CGRectMake(QRD_SCREEN_WIDTH - 36, QRD_LOGIN_TOP_SPACE - 68, 24, 24);
     [_setButton setImage:[UIImage imageNamed:@"setting"] forState:UIControlStateNormal];
     [_setButton addTarget:self action:@selector(settingAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:_setButton];
@@ -109,6 +129,7 @@ UITextFieldDelegate
 
 #pragma mark - button action
 - (void)nextAction:(UIButton *)next {
+    [_userView.userTextField resignFirstResponder];
     if (!_userView.agreementButton.selected) {
         [self showAlertWithMessage:@"需要同意用户协议才能继续！"];
         return;
@@ -116,8 +137,7 @@ UITextFieldDelegate
 
     if (_userView.userTextField.text.length != 0) {
         _userView.userTextField.text = [_userView.userTextField.text stringByReplacingOccurrencesOfString:@" " withString:@""];
-        if ([self checkUserId:_userView.userTextField.text]) {
-            [_userView.userTextField resignFirstResponder];
+        if ([self checkUserId:_userView.userTextField.text] && _resultCorrect) {
             _userString = _userView.userTextField.text;
             [[NSUserDefaults standardUserDefaults] setObject:_userString forKey:QN_USER_ID_KEY];
             [_userView removeFromSuperview];
@@ -136,7 +156,7 @@ UITextFieldDelegate
     NSString *roomName;
     if (_joinRoomView.roomTextField.text.length != 0) {
         _joinRoomView.roomTextField.text = [_joinRoomView.roomTextField.text stringByReplacingOccurrencesOfString:@" " withString:@""];
-        if ([self checkRoomName:_joinRoomView.roomTextField.text]) {
+        if ([self checkRoomName:_joinRoomView.roomTextField.text] && _resultCorrect) {
             roomName = _joinRoomView.roomTextField.text;
         } else{
             [self showAlertWithMessage:@"请按要求正确填写房间名称！"];
@@ -147,33 +167,49 @@ UITextFieldDelegate
         return;
     }
 
-    NSString *userId = [[NSUserDefaults standardUserDefaults] objectForKey:QN_USER_ID_KEY];
-    NSString *appId = [[NSUserDefaults standardUserDefaults] objectForKey:QN_APP_ID_KEY];
-    if (0 == appId.length) {
-        appId = QN_RTC_DEMO_APPID;
-    }
     NSDictionary *configDic = [[NSUserDefaults standardUserDefaults] objectForKey:QN_SET_CONFIG_KEY];
     if (!configDic) {
-        configDic = @{@"VideoSize":NSStringFromCGSize(CGSizeMake(480, 640)), @"FrameRate":@20};
+        configDic = @{@"VideoSize":NSStringFromCGSize(CGSizeMake(480, 640)), @"FrameRate":@15, @"Bitrate":@(400*1000)};
+    } else if (![configDic objectForKey:@"Bitrate"]) {
+        // 如果不存在 Bitrate key，做一下兼容处理
+        configDic = @{@"VideoSize":NSStringFromCGSize(CGSizeMake(480, 640)), @"FrameRate":@15, @"Bitrate":@(400*1000)};
+        [[NSUserDefaults standardUserDefaults] setObject:configDic forKey:QN_SET_CONFIG_KEY];
     }
 
-    [[NSUserDefaults standardUserDefaults] setObject:roomName forKey:@"QN_ROOM_NAME"];
+    [[NSUserDefaults standardUserDefaults] setObject:roomName forKey:QN_ROOM_NAME_KEY];
     [[NSUserDefaults standardUserDefaults] synchronize];
-    if (_joinRoomView.confButton.selected) {
-        QRDRTCViewController *rtcVC = [[QRDRTCViewController alloc] init];
-        rtcVC.roomName = roomName;
-        rtcVC.userId = userId;
-        rtcVC.appId = appId;
-        rtcVC.configDic = configDic;
-        [self.navigationController pushViewController:rtcVC animated:YES];
-    }
-    else {
-        QRDScreenRecorderViewController *recorderViewController = [[QRDScreenRecorderViewController alloc] init];
-        recorderViewController.roomName = roomName;
-        recorderViewController.userId = userId;
-        recorderViewController.appId = appId;
-        recorderViewController.configDic = configDic;
-        [self.navigationController pushViewController:recorderViewController animated:YES];
+    
+    // 校验缓存的 userId
+    if (![self checkUserId:_userString]) {
+        [self showAlertWithMessage:@"请点击右上角设置按钮，将昵称修改正确并保存后，再进房间！\n Please click the Settings button in the upper right corner，after the nickname is modified correctly and saved successfully，then enter the room again！"];
+    } else{
+        if (_joinRoomView.confButton.selected) {
+            // 连麦主入口
+            QRDRTCViewController *rtcVC = [[QRDRTCViewController alloc] init];
+            rtcVC.configDic = configDic;
+            rtcVC.modalPresentationStyle = UIModalPresentationFullScreen;
+            [self presentViewController:rtcVC animated:YES completion:nil];
+        }
+        else if (_joinRoomView.audioCallButton.selected) {
+            // 纯音频连麦入口
+            QRDPureAudioViewController *rtcVC = [[QRDPureAudioViewController alloc] init];
+            rtcVC.configDic = configDic;
+            rtcVC.modalPresentationStyle = UIModalPresentationFullScreen;
+            [self presentViewController:rtcVC animated:YES completion:nil];
+        }
+        else if (_joinRoomView.screenButton.selected) {
+            // 录屏入口
+            QRDScreenRecorderViewController *recorderViewController = [[QRDScreenRecorderViewController alloc] init];
+            recorderViewController.configDic = configDic;
+            recorderViewController.modalPresentationStyle = UIModalPresentationFullScreen;
+            [self presentViewController:recorderViewController animated:YES completion:nil];
+        } else if (_joinRoomView.multiTrackButton.selected) {
+            // 录屏连麦入口
+            QRDScreenMainViewController *vc = [[QRDScreenMainViewController alloc] init];
+            vc.configDic = configDic;
+            vc.modalPresentationStyle = UIModalPresentationFullScreen;
+            [self presentViewController:vc animated:YES completion:nil];
+        }
     }
 }
 
@@ -182,16 +218,59 @@ UITextFieldDelegate
     [self.navigationController pushViewController:settingVC animated:YES];
 }
 
+- (void)liveButtonClick:(UIButton *)liveButton {
+    [self.view endEditing:YES];
+
+    NSString *roomName;
+    if (_joinRoomView.roomTextField.text.length != 0) {
+        _joinRoomView.roomTextField.text = [_joinRoomView.roomTextField.text stringByReplacingOccurrencesOfString:@" " withString:@""];
+        if ([self checkRoomName:_joinRoomView.roomTextField.text] && _resultCorrect) {
+            roomName = _joinRoomView.roomTextField.text;
+        } else{
+            [self showAlertWithMessage:@"请按要求正确填写房间名称！"];
+            return;
+        }
+    } else{
+        [self showAlertWithMessage:@"请填写房间名称！"];
+        return;
+    }
+    [[NSUserDefaults standardUserDefaults] setObject:roomName forKey:QN_ROOM_NAME_KEY];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+
+    // 校验缓存的 userId
+    if (![self checkUserId:_userString]) {
+        [self showAlertWithMessage:@"请点击右上角设置按钮，将昵称修改正确并保存后，再进房间！\n Please click the Settings button in the upper right corner，after the nickname is modified correctly and saved successfully，then enter the room again！"];
+    } else{
+        QRDPlayerViewController *playerViewController = [[QRDPlayerViewController alloc] init];
+        playerViewController.modalPresentationStyle = UIModalPresentationFullScreen;
+        [self presentViewController:playerViewController animated:YES completion:nil];
+    }
+}
+
 - (void)agreementButtonClick:(id)sender {
     UIButton *button = (UIButton *)sender;
     button.selected = !button.isSelected;
 }
 
 - (void)confButtonClick:(id)sender {
-    if (_joinRoomView.screenButton.isSelected) {
-        _joinRoomView.confButton.selected = YES;
-        _joinRoomView.screenButton.selected = NO;
-    }
+    _joinRoomView.confButton.selected = YES;
+    _joinRoomView.audioCallButton.selected = NO;
+    _joinRoomView.screenButton.selected = NO;
+    _joinRoomView.multiTrackButton.selected = NO;
+}
+
+- (void)audioCallButtonClick:(id)sender {
+    _joinRoomView.confButton.selected = NO;
+    _joinRoomView.audioCallButton.selected = YES;
+    _joinRoomView.screenButton.selected = NO;
+    _joinRoomView.multiTrackButton.selected = NO;
+}
+
+- (void)multiTrackButtonClick:(id)sender {
+    _joinRoomView.confButton.selected = NO;
+    _joinRoomView.audioCallButton.selected = NO;
+    _joinRoomView.screenButton.selected = NO;
+    _joinRoomView.multiTrackButton.selected = YES;
 }
 
 - (void)screenButtonClick:(id)sender {
@@ -200,19 +279,27 @@ UITextFieldDelegate
         return;
     }
 
-    if (_joinRoomView.confButton.isSelected) {
-        _joinRoomView.screenButton.selected = YES;
-        _joinRoomView.confButton.selected = NO;
-    }
+    _joinRoomView.confButton.selected = NO;
+    _joinRoomView.audioCallButton.selected = NO;
+    _joinRoomView.screenButton.selected = YES;
+    _joinRoomView.multiTrackButton.selected = NO;
 }
 
 - (void)agreementLabelTapped:(id)sender {
     QRDAgreementViewController *agreementViewController = [[QRDAgreementViewController alloc] init];
+    agreementViewController.modalPresentationStyle = UIModalPresentationFullScreen;
     [self presentViewController:agreementViewController animated:YES completion:nil];
 }
 
 #pragma mark - textField delegate
 - (void)textFieldDidEndEditing:(UITextField *)textField {
+    NSString *text = [textField.text stringByReplacingOccurrencesOfString:@" " withString:@""];
+    if ([textField isEqual:_userView.userTextField]) {
+        _resultCorrect = [self checkUserId:text];
+    }
+    if ([textField isEqual:_joinRoomView.roomTextField]) {
+        _resultCorrect = [self checkRoomName:text];
+    }
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {

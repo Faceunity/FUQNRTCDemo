@@ -1,7 +1,16 @@
 # Uncomment the next line to define a global platform for your project
- platform :ios, '8.0'
+ platform :ios, '9.0'
 
 target 'QNRTCKitDemo' do
-  pod 'QNRTCKit', :path =>'../QNRTCKit.podspec'
+  pod 'QNRTCKit'
   pod 'Bugsnag', '5.15.4'
+  pod 'PLPlayerKit', '3.4.1'
+  pod 'MMMaterialDesignSpinner', '0.2.5'
+  pod 'JGProgressHUD', '2.0.3'
+  pod 'Masonry', '1.1.0'
+  
+  pod 'SVProgressHUD'
+  pod 'Nama', '~> 7.2.0'
+  
+  
 end
