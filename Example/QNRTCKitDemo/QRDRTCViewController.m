@@ -14,15 +14,13 @@
 
 /**faceu */
 #import "FUManager.h"
-#import "FUAPIDemoBar.h"
-
+#import "UIViewController+FaceUnityUIExtension.h"
 #import "FUTestRecorder.h"
 
 @interface QRDRTCViewController ()
 <
 QRDMergeSettingViewDelegate,
-UITextFieldDelegate,
-FUAPIDemoBarDelegate
+UITextFieldDelegate
 >
 @property (nonatomic, strong) QRDMergeSettingView *mergeSettingView;
 @property (nonatomic, assign) CGFloat keyboardHeight;
@@ -51,10 +49,6 @@ FUAPIDemoBarDelegate
 @property (nonatomic, assign) NSInteger serialNum;
 
 
-/// FU美颜工具
-@property(nonatomic, strong) FUAPIDemoBar *demoBar;
-
-
 @end
 
 @implementation QRDRTCViewController
@@ -63,58 +57,30 @@ FUAPIDemoBarDelegate
 #pragma mark ----- FaceUnity ----
 
 - (void)RTCEngine:(QNRTCEngine *)engine cameraSourceDidGetSampleBuffer:(CMSampleBufferRef)sampleBuffer{
-
-    [[FUTestRecorder shareRecorder] processFrameWithLog];
-    //可以对 sampleBuffer 做美颜/滤镜等操作
-    CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) ;
-    [[FUManager shareManager] renderItemsToPixelBuffer:pixelBuffer];
     
-}
-
-
-/// 初始化demoBar
-- (FUAPIDemoBar *)demoBar {
-    if (!_demoBar) {
+    if (self.isuseFU) {
         
-        _demoBar = [[FUAPIDemoBar alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - 194 - 240, self.view.frame.size.width, 194)];
-        _demoBar.mDelegate = self;
-    }
-    return _demoBar ;
-}
-
-/**      FUAPIDemoBarDelegate       **/
-
--(void)filterValueChange:(FUBeautyParam *)param{
-    [[FUManager shareManager] filterValueChange:param];
-}
-
--(void)switchRenderState:(BOOL)state{
-    
-    [FUManager shareManager].isRender = state;
-}
-
--(void)bottomDidChange:(int)index{
-    if (index < 3) {
-        [[FUManager shareManager] setRenderType:FUDataTypeBeautify];
-    }
-    if (index == 3) {
-        [[FUManager shareManager] setRenderType:FUDataTypeStrick];
-    }
-    
-    if (index == 4) {
-        [[FUManager shareManager] setRenderType:FUDataTypeMakeup];
-    }
-    if (index == 5) {
-        [[FUManager shareManager] setRenderType:FUDataTypebody];
+        [[FUTestRecorder shareRecorder] processFrameWithLog];
+        //可以对 sampleBuffer 做美颜/滤镜等操作
+        CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) ;
+        CVPixelBufferRef resultBuffer = [[FUManager shareManager] renderItemsToPixelBuffer:pixelBuffer];
+        
+        if (resultBuffer) { // 人脸人体检测提示语
+            
+            [self checkAI];
+        }
     }
 }
 
 
 
 - (void)dealloc {
+
+    if (self.isuseFU) {
     
-    /// FU 销毁道具
-    [[FUManager shareManager] destoryItems];
+        /// FU 销毁道具
+        [[FUManager shareManager] destoryItems];
+    }
     
     [self removeNotification];
 }
@@ -205,16 +171,13 @@ FUAPIDemoBarDelegate
         make.width.height.equalTo(self.view).multipliedBy(0.6);
     }];
     self.tableView.hidden = YES;
-    
-    [[FUTestRecorder shareRecorder] setupRecord];
-    /**     -----  FaceUnity  ----     **/
-    [[FUManager shareManager] loadFilter];
-    [FUManager shareManager].isRender = YES;
-    [FUManager shareManager].flipx = YES;
-    [FUManager shareManager].trackFlipx = YES;
-    [self.view addSubview:self.demoBar];
-    /**     -----  FaceUnity  ----     **/
 
+    if (self.isuseFU) {
+        
+        /**     -----  FaceUnity  ----     **/
+        [self setupFaceUnity];
+        /**     -----  FaceUnity  ----     **/
+    }
     
 }
 
@@ -676,6 +639,14 @@ FUAPIDemoBarDelegate
 - (void)toggleButtonClick:(UIButton *)button {
     // 切换摄像头（前置/后置）
     [self.engine toggleCamera];
+    
+    if (self.isuseFU) {
+        
+        [FUManager shareManager].flipx = ![FUManager shareManager].flipx;
+        [FUManager shareManager].trackFlipx = ![FUManager shareManager].trackFlipx;
+        [[FUManager shareManager] onCameraChange];
+    }
+    
 }
 
 - (void)microphoneAction:(UIButton *)microphoneButton {

@@ -28,6 +28,8 @@ UITextFieldDelegate
 @property (nonatomic, strong) UIButton *setButton;
 @property (nonatomic, strong) UIImageView *imageView;
 @property (nonatomic, copy) NSString *userString;
+@property(nonatomic, assign) BOOL isuseFU;
+
 
 /**
  判断是否受英文状态下的自动补全影响（带来了特殊字符）
@@ -106,7 +108,24 @@ UITextFieldDelegate
     [_setButton addTarget:self action:@selector(settingAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:_setButton];
     
+    UILabel *fuLbl = [[UILabel alloc] initWithFrame:CGRectMake(20, QRD_LOGIN_TOP_SPACE - 68, 64, 28)];
+    fuLbl.text = @"FU开关";
+    fuLbl.textColor = [UIColor whiteColor];
+    fuLbl.font = [UIFont systemFontOfSize:16];
+    UISwitch *fuswitch = [[UISwitch alloc] initWithFrame:CGRectMake(CGRectGetMaxX(fuLbl.frame), QRD_LOGIN_TOP_SPACE - 68, 28, 28)];
+    [fuswitch addTarget:self action:@selector(selectedFUChanged:) forControlEvents:(UIControlEventValueChanged)];
+    [fuswitch setOn:YES];
+    [self.view addSubview:fuLbl];
+    [self.view addSubview:fuswitch];
+    
+    // 默认YES
+    self.isuseFU = YES;
     self.imageView.frame = CGRectMake(95, QRD_LOGIN_TOP_SPACE + 242, QRD_SCREEN_WIDTH - 190, QRD_SCREEN_HEIGHT - QRD_LOGIN_TOP_SPACE - 340);
+}
+
+- (void)selectedFUChanged:(UISwitch *)sender{
+    
+    self.isuseFU = sender.isOn;
 }
 
 - (void)setupLogoView {
@@ -186,6 +205,7 @@ UITextFieldDelegate
         if (_joinRoomView.confButton.selected) {
             // 连麦主入口
             QRDRTCViewController *rtcVC = [[QRDRTCViewController alloc] init];
+            rtcVC.isuseFU = self.isuseFU;
             rtcVC.configDic = configDic;
             rtcVC.modalPresentationStyle = UIModalPresentationFullScreen;
             [self presentViewController:rtcVC animated:YES completion:nil];

@@ -2,7 +2,7 @@
  platform :ios, '9.0'
 
 target 'QNRTCKitDemo' do
-  pod 'QNRTCKit'
+  pod 'QNRTCKit', '~> 3.0.2'
   pod 'Bugsnag', '5.15.4'
   pod 'PLPlayerKit', '3.4.1'
   pod 'MMMaterialDesignSpinner', '0.2.5'
@@ -10,7 +10,6 @@ target 'QNRTCKitDemo' do
   pod 'Masonry', '1.1.0'
   
   pod 'SVProgressHUD'
-  pod 'Nama', '~> 7.2.0'
   
   
 end
