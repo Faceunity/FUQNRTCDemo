@@ -42,6 +42,8 @@ static NSString *screenTag = @"screen";
 @property (nonatomic, assign) CGSize videoEncodeSize;
 @property (nonatomic, assign) NSInteger bitrate;
 
+@property(nonatomic, assign) BOOL isuseFU;
+
 - (void)publish;
 
 @end
