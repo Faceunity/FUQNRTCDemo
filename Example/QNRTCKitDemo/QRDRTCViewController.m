@@ -13,9 +13,7 @@
 #import "QRDMergeSettingView.h"
 
 /**faceu */
-#import "FUManager.h"
-#import "UIViewController+FaceUnityUIExtension.h"
-#import "FUTestRecorder.h"
+#import "FUDemoManager.h"
 
 @interface QRDRTCViewController ()
 <
@@ -60,16 +58,11 @@ UITextFieldDelegate
     
     if (self.isuseFU) {
         
-        [[FUTestRecorder shareRecorder] processFrameWithLog];
         //可以对 sampleBuffer 做美颜/滤镜等操作
-        CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) ;
-        CVPixelBufferRef resultBuffer = [[FUManager shareManager] renderItemsToPixelBuffer:pixelBuffer];
-        
-        if (resultBuffer) { // 人脸人体检测提示语
-            
-            [self checkAI];
-        }
+        CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+        [[FUManager shareManager] renderItemsToPixelBuffer:pixelBuffer];
     }
+    
 }
 
 
@@ -174,9 +167,12 @@ UITextFieldDelegate
 
     if (self.isuseFU) {
         
-        /**     -----  FaceUnity  ----     **/
-        [self setupFaceUnity];
-        /**     -----  FaceUnity  ----     **/
+        // FaceUnity UI
+        CGFloat safeAreaBottom = 0;
+        if (@available(iOS 11.0, *)) {
+            safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
+        }
+        [FUDemoManager setupFaceUnityDemoInController:self originY:CGRectGetHeight(self.view.frame) - FUBottomBarHeight - safeAreaBottom - 160];
     }
     
 }
@@ -643,7 +639,6 @@ UITextFieldDelegate
     if (self.isuseFU) {
         
         [FUManager shareManager].flipx = ![FUManager shareManager].flipx;
-        [FUManager shareManager].trackFlipx = ![FUManager shareManager].trackFlipx;
         [[FUManager shareManager] onCameraChange];
     }
     
