@@ -32,13 +32,18 @@ FUQNRTCDemo 是集成了 [Faceunity](https://github.com/Faceunity/FULiveDemo) �
 1、在 `QRDRTCViewController.m` 中添加头文件
 
 ```objc
-#import "FUManager.h"
-#import "UIViewController+FaceUnityUIExtension.h"
+#import "FUDemoManager.h"
 ```
 
-2、在 `viewDidLoad` 方法中初始化FU `setupFaceUnity` 会初始化FUSDK,和添加美颜工具条,具体实现可查看 `UIViewController+FaceUnityUIExtension.m`
+2、在 `viewDidLoad` 方法中初始化FU `setupFaceUnityDemoInController` 会初始化FUSDK,和添加美颜工具条,具体实现可查看 `FUDemoManager.m`
+
 ```objc
-[self setupFaceUnity];
+        // FaceUnity UI
+        CGFloat safeAreaBottom = 0;
+        if (@available(iOS 11.0, *)) {
+            safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
+        }
+        [FUDemoManager setupFaceUnityDemoInController:self originY:CGRectGetHeight(self.view.frame) - FUBottomBarHeight - safeAreaBottom - 160];
 ```
 
 ### 三、在视频数据回调中 加入 FaceUnity  的数据处理
