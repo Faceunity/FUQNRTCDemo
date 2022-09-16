@@ -30,6 +30,8 @@ UITextFieldDelegate
 
 @property (nonatomic, strong) UILabel *forwardLabel;
 
+@property (nonatomic, strong) FUDemoManager *demoManager;
+
 /**
 * 如果您的场景包括合流转推和单路转推的切换，那么需要维护一个 serialNum 的参数，代表流的优先级，
 * 使其不断自增来实现 rtmp 流的无缝切换。
@@ -172,7 +174,8 @@ UITextFieldDelegate
         if (@available(iOS 11.0, *)) {
             safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
         }
-        [FUDemoManager setupFaceUnityDemoInController:self originY:CGRectGetHeight(self.view.frame) - FUBottomBarHeight - safeAreaBottom - 160];
+    
+        self.demoManager = [[FUDemoManager alloc] initWithTargetController:self originY:CGRectGetHeight(self.view.frame) - FUBottomBarHeight - safeAreaBottom - 180];
     }
     
 }
@@ -638,7 +641,7 @@ UITextFieldDelegate
     
     if (self.isuseFU) {
         
-        [FUManager shareManager].flipx = ![FUManager shareManager].flipx;
+//        [FUManager shareManager].flipx = ![FUManager shareManager].flipx;
         [[FUManager shareManager] onCameraChange];
     }
     

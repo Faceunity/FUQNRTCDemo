@@ -1,44 +1,44 @@
 PODS:
   - Bugsnag (5.15.4)
+  - FURenderKit (8.3.0)
   - JGProgressHUD (2.0.3)
   - Masonry (1.1.0)
   - MMMaterialDesignSpinner (0.2.5)
   - PLPlayerKit (3.4.1):
     - PLPlayerKit/iphoneos (= 3.4.1)
   - PLPlayerKit/iphoneos (3.4.1)
-  - QNRTCKit (3.0.2):
-    - QNRTCKit/Core (= 3.0.2)
-  - QNRTCKit/Core (3.0.2)
-  - SVProgressHUD (2.2.5)
+  - QNRTCKit (3.1.2):
+    - QNRTCKit/Core (= 3.1.2)
+  - QNRTCKit/Core (3.1.2)
 
 DEPENDENCIES:
   - Bugsnag (= 5.15.4)
+  - FURenderKit (~> 8.3.0)
   - JGProgressHUD (= 2.0.3)
   - Masonry (= 1.1.0)
   - MMMaterialDesignSpinner (= 0.2.5)
   - PLPlayerKit (= 3.4.1)
-  - QNRTCKit (~> 3.0.2)
-  - SVProgressHUD
+  - QNRTCKit (~> 3.1.2)
 
 SPEC REPOS:
-  trunk:
+  https://mirrors.tuna.tsinghua.edu.cn/git/CocoaPods/Specs.git:
     - Bugsnag
+    - FURenderKit
     - JGProgressHUD
     - Masonry
     - MMMaterialDesignSpinner
     - PLPlayerKit
     - QNRTCKit
-    - SVProgressHUD
 
 SPEC CHECKSUMS:
   Bugsnag: df1d395695ddf795aa35c23ef4eaef4a04ddcffd
+  FURenderKit: 3cd05abd03134d287a1d63cbaaeb95d304ba6bd6
   JGProgressHUD: 12b20a8f4ffe05258f8635c1ab92816e451f904d
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   MMMaterialDesignSpinner: a548042720c2e5f04212048483085d7942ac3e81
   PLPlayerKit: ebec9d70b66a95d1770b2dc5107fe2a469454a28
-  QNRTCKit: 8e39a3d0f80cae7aec40618e14510b347f42dc96
-  SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
+  QNRTCKit: 401a54e899b09aff5a02e89880c6769679a25cdd
 
-PODFILE CHECKSUM: 3eef6f5303af1293f2d94012c08752c8e9cad3ed
+PODFILE CHECKSUM: a17630f00d52be3d75c9ec8100bf4ee172444568
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.11.3
