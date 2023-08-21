@@ -1,15 +1,15 @@
 # Uncomment the next line to define a global platform for your project
- platform :ios, '9.0'
 source 'https://mirrors.tuna.tsinghua.edu.cn/git/CocoaPods/Specs.git'
+ platform :ios, '9.0'
+
 target 'QNRTCKitDemo' do
-  pod 'QNRTCKit', '~> 3.1.2'
+  pod 'QNRTCKit-iOS', '5.2.2'
+  pod 'Fabric', '1.7.2'
+  pod 'Crashlytics', '3.9.3'
   pod 'Bugsnag', '5.15.4'
-  pod 'PLPlayerKit', '3.4.1'
+  pod 'PLPlayerKit', '3.4.3'
   pod 'MMMaterialDesignSpinner', '0.2.5'
   pod 'JGProgressHUD', '2.0.3'
   pod 'Masonry', '1.1.0'
-  
-  pod 'FURenderKit', '~> 8.3.0'
-  
-  
+  pod 'FURenderKit', '~> 8.7.0'
 end

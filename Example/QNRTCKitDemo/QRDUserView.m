@@ -16,8 +16,8 @@
 
 @property (nonatomic, strong) UILabel *nameLabel;
 
-@property (nonatomic, strong, readwrite) QNVideoView *cameraView;
-@property (nonatomic, strong, readwrite) QNVideoView *screenView;
+@property (nonatomic, strong, readwrite) QNVideoGLView *cameraView;
+@property (nonatomic, strong, readwrite) QNVideoGLView *screenView;
 
 @property (nonatomic, strong) UILabel *alertLabel;
 //@property (nonatomic, strong) EZAudioPlot *plotView;
@@ -57,7 +57,7 @@
             make.right.equalTo(self);
         }];
         
-        _cameraView = [[QNVideoView alloc] init];
+        _cameraView = [[QNVideoGLView alloc] init];
         _cameraView.hidden = YES;
         [self insertSubview:_cameraView atIndex:0];
         
@@ -65,7 +65,7 @@
             make.edges.equalTo(self);
         }];
         
-        _screenView = [[QNVideoView alloc] initWithFrame:self.bounds];
+        _screenView = [[QNVideoGLView alloc] initWithFrame:self.bounds];
         _screenView.hidden = YES;
         [self insertSubview:_screenView atIndex:0];
         [_screenView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -211,10 +211,10 @@
     });
 }
 
-- (QNTrackInfo *)trackInfoWithTrackId:(NSString *)trackId {
-    for (QNTrackInfo *trackInfo in self.traks) {
-        if ([trackInfo.trackId isEqualToString:trackId]) {
-            return trackInfo;
+- (QNTrack *)trackInfoWithTrackId:(NSString *)trackId {
+    for (QNTrack *track in self.traks) {
+        if ([track.trackID isEqualToString:trackId]) {
+            return track;
         }
     }
     return nil;
