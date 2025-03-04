@@ -698,15 +698,15 @@ static const int cLabelTag = 10;
  *
  * 注意：回调远端用户视频数据会带来一定的性能消耗，如果没有相关需求，请不要实现该回调
  */
-- (void)remoteVideoTrack:(QNRemoteVideoTrack *)remoteVideoTrack didGetPixelBuffer:(CVPixelBufferRef)pixelBuffer; {
-    static int i = 0;
-    if (i % 300 == 0) {
-        NSString *str = [NSString stringWithFormat:@"远端用户视频数据的回调:\ntrackID: %@ size: %zux%zu",remoteVideoTrack.trackID, CVPixelBufferGetWidth(pixelBuffer), CVPixelBufferGetHeight(pixelBuffer)];
-//                [self addLogString:str];
-    }
-    i ++;
-    
-}
+//- (void)remoteVideoTrack:(QNRemoteVideoTrack *)remoteVideoTrack didGetPixelBuffer:(CVPixelBufferRef)pixelBuffer; {
+//    static int i = 0;
+//    if (i % 300 == 0) {
+//        NSString *str = [NSString stringWithFormat:@"远端用户视频数据的回调:\ntrackID: %@ size: %zux%zu",remoteVideoTrack.trackID, CVPixelBufferGetWidth(pixelBuffer), CVPixelBufferGetHeight(pixelBuffer)];
+////                [self addLogString:str];
+//    }
+//    i ++;
+//    
+//}
 
 #pragma mark QNRemoteTrackAudioDataDelegate
 
@@ -715,41 +715,41 @@ static const int cLabelTag = 10;
  *
  * 注意：回调远端用户音频数据会带来一定的性能消耗，如果没有相关需求，请不要实现该回调
  */
-- (void)remoteAudioTrack:(QNRemoteAudioTrack *)remoteAudioTrack didGetAudioBuffer:(AudioBuffer *)audioBuffer bitsPerSample:(NSUInteger)bitsPerSample sampleRate:(NSUInteger)sampleRate {
-    static int i = 0;
-    if (i % 500 == 0) {
-        NSString *str = [NSString stringWithFormat:@"远端用户音频数据的回调:\ntrackID: %@\NbufferCount: %d\nbitsPerSample:%lu\nsampleRate:%lu,dataLen = %u",remoteAudioTrack.trackID, i, (unsigned long)bitsPerSample, (unsigned long)sampleRate, (unsigned int)audioBuffer->mDataByteSize];
-//                [self addLogString:str];
-    }
-    i ++;
-}
+//- (void)remoteAudioTrack:(QNRemoteAudioTrack *)remoteAudioTrack didGetAudioBuffer:(AudioBuffer *)audioBuffer bitsPerSample:(NSUInteger)bitsPerSample sampleRate:(NSUInteger)sampleRate {
+//    static int i = 0;
+//    if (i % 500 == 0) {
+//        NSString *str = [NSString stringWithFormat:@"远端用户音频数据的回调:\ntrackID: %@\n bufferCount: %d\nbitsPerSample:%lu\nsampleRate:%lu,dataLen = %u",remoteAudioTrack.trackID, i, (unsigned long)bitsPerSample, (unsigned long)sampleRate, (unsigned int)audioBuffer->mDataByteSize];
+////                [self addLogString:str];
+//    }
+//    i ++;
+//}
 
 #pragma mark QNLocalVideoTrackDelegate
 
 /**
  * 获取到摄像头原数据时的回调, 便于开发者做滤镜等处理，需要注意的是这个回调在 camera 数据的输出线程，请不要做过于耗时的操作，否则可能会导致编码帧率下降
  */
-- (void)localVideoTrack:(QNLocalVideoTrack *)localVideoTrack didGetPixelBuffer:(CVPixelBufferRef)pixelBuffer {
-    static int i = 0;
-    if (i % 300 == 0) {
-        NSString *str = [NSString stringWithFormat:@"获取到本地track: %@ 的原数据时的回调:\nbufferCount: %d, size = %zux%zu",localVideoTrack.trackID,  i, CVPixelBufferGetWidth(pixelBuffer), CVPixelBufferGetHeight(pixelBuffer)];
-        //        [self addLogString:str];
-    }
-    i ++;
-}
+//- (void)localVideoTrack:(QNLocalVideoTrack *)localVideoTrack didGetPixelBuffer:(CVPixelBufferRef)pixelBuffer {
+//    static int i = 0;
+//    if (i % 300 == 0) {
+//        NSString *str = [NSString stringWithFormat:@"获取到本地track: %@ 的原数据时的回调:\nbufferCount: %d, size = %zux%zu",localVideoTrack.trackID,  i, CVPixelBufferGetWidth(pixelBuffer), CVPixelBufferGetHeight(pixelBuffer)];
+//        //        [self addLogString:str];
+//    }
+//    i ++;
+//}
 
 #pragma mark QNLocalAudioTrackDelegate
 
 /**
  * 获取到麦克风原数据时的回调，需要注意的是这个回调在 AU Remote IO 线程，请不要做过于耗时的操作，否则可能阻塞该线程影响音频输出或其他未知问题
  */
-- (void)localAudioTrack:(QNLocalAudioTrack *)localAudioTrack didGetAudioBuffer:(AudioBuffer *)audioBuffer bitsPerSample:(NSUInteger)bitsPerSample sampleRate:(NSUInteger)sampleRate {
-    static int i = 0;
-    if (i % 500 == 0) {
-        NSString *str = [NSString stringWithFormat:@"获取到本地音频 track  ：%@ 的原数据时的回调:\nbufferCount: %d, dataLen = %u", localAudioTrack.trackID,  i, (unsigned int)audioBuffer->mDataByteSize];
-        //        [self addLogString:str];
-    }
-    i ++;
-}
+//- (void)localAudioTrack:(QNLocalAudioTrack *)localAudioTrack didGetAudioBuffer:(AudioBuffer *)audioBuffer bitsPerSample:(NSUInteger)bitsPerSample sampleRate:(NSUInteger)sampleRate {
+//    static int i = 0;
+//    if (i % 500 == 0) {
+//        NSString *str = [NSString stringWithFormat:@"获取到本地音频 track  ：%@ 的原数据时的回调:\nbufferCount: %d, dataLen = %u", localAudioTrack.trackID,  i, (unsigned int)audioBuffer->mDataByteSize];
+//        //        [self addLogString:str];
+//    }
+//    i ++;
+//}
 
 @end

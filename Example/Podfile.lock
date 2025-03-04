@@ -3,51 +3,52 @@ PODS:
   - Crashlytics (3.9.3):
     - Fabric (~> 1.7.2)
   - Fabric (1.7.2)
-  - FURenderKit (8.7.0)
+  - FURenderKit_nama (8.13.0)
   - JGProgressHUD (2.0.3)
   - Masonry (1.1.0)
   - MMMaterialDesignSpinner (0.2.5)
   - PLPlayerKit (3.4.3):
     - PLPlayerKit/iphoneos (= 3.4.3)
   - PLPlayerKit/iphoneos (3.4.3)
-  - QNRTCKit-iOS (5.2.2):
-    - QNRTCKit-iOS/Core (= 5.2.2)
-  - QNRTCKit-iOS/Core (5.2.2)
+  - QNRTCKit-iOS (6.5.0):
+    - QNRTCKit-iOS/Core (= 6.5.0)
+  - QNRTCKit-iOS/Core (6.5.0)
 
 DEPENDENCIES:
   - Bugsnag (= 5.15.4)
   - Crashlytics (= 3.9.3)
   - Fabric (= 1.7.2)
-  - FURenderKit (~> 8.7.0)
+  - FURenderKit_nama (= 8.13.0)
   - JGProgressHUD (= 2.0.3)
   - Masonry (= 1.1.0)
   - MMMaterialDesignSpinner (= 0.2.5)
   - PLPlayerKit (= 3.4.3)
-  - QNRTCKit-iOS (= 5.2.2)
+  - QNRTCKit-iOS (= 6.5.0)
 
 SPEC REPOS:
   https://mirrors.tuna.tsinghua.edu.cn/git/CocoaPods/Specs.git:
+    - FURenderKit_nama
+    - QNRTCKit-iOS
+  trunk:
     - Bugsnag
     - Crashlytics
     - Fabric
-    - FURenderKit
     - JGProgressHUD
     - Masonry
     - MMMaterialDesignSpinner
     - PLPlayerKit
-    - QNRTCKit-iOS
 
 SPEC CHECKSUMS:
   Bugsnag: df1d395695ddf795aa35c23ef4eaef4a04ddcffd
   Crashlytics: 4689af8a6a5befe1e0d2c7e72681805cc43eb7e4
   Fabric: e25cc44b28b9a4d8895cfc623834d3c01d2237df
-  FURenderKit: a73f9a86fc4b2963c6c29bd58f0b42a953cf9362
+  FURenderKit_nama: 0737ac79ece72d2a23b56887cf57d70edb9586fe
   JGProgressHUD: 12b20a8f4ffe05258f8635c1ab92816e451f904d
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   MMMaterialDesignSpinner: a548042720c2e5f04212048483085d7942ac3e81
   PLPlayerKit: a44734dc78c1f8f9fb22c537fa1916612fa46b06
-  QNRTCKit-iOS: a462887d3535b50ce55087e780ad8862882fb66b
+  QNRTCKit-iOS: 9210d087da59e2c25706370696c2df1711a2acc0
 
-PODFILE CHECKSUM: 96b3e462710830bb41a5d3f6bdc4f82168dea18e
+PODFILE CHECKSUM: 1ad754085bbd4cab8bfe4438469108b17a9410ca
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.16.2
