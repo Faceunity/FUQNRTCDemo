@@ -11,16 +11,14 @@
 #import "UIView+Alert.h"
 #import <QNRTCKit/QNRTCKit.h>
 #import "QRDTranscodingStreamingSettingView.h"
-
-/**faceu */
 #import "FUDemoManager.h"
+
 
 #define QN_DELAY_MS 5000
 
 @interface QRDRTCViewController ()
 <
 QRDTranscodingStreamingSettingViewDelegate,
-FUCaptureCameraDelegate,
 UITextFieldDelegate
 >
 @property (nonatomic, strong) QRDTranscodingStreamingSettingView *transcodingStreamingSettingView;
@@ -34,8 +32,6 @@ UITextFieldDelegate
 @property (nonatomic, strong) UILabel *forwardLabel;
 
 @property (nonatomic, strong) QNDirectLiveStreamingConfig *directConfig;
-@property(nonatomic, strong) QNCustomVideoTrack *customVideoTrack;
-@property(nonatomic, strong) FUCaptureCamera *mCamera;
 
 /**
 * 如果您的场景包括合流转推和单路转推的切换，那么需要维护一个 serialNum 的参数，代表流的优先级，
@@ -57,73 +53,36 @@ UITextFieldDelegate
 
 @implementation QRDRTCViewController
 
-- (FUCaptureCamera *)mCamera{
-    if(!_mCamera){
-        _mCamera = [[FUCaptureCamera alloc] initWithCameraPosition:(AVCaptureDevicePositionFront) captureFormat:kCVPixelFormatType_420YpCbCr8BiPlanarFullRange];
-        _mCamera.delegate = self;
-    }
-    return _mCamera;
-}
-
-
-- (void)didOutputVideoSampleBuffer:(CMSampleBufferRef)sampleBuffer captureDevicePosition:(AVCaptureDevicePosition)position{
-
-    CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-    if (self.isuseFU) {
-        [[FUDemoManager shared] checkAITrackedResult];
-        if ([FUDemoManager shared].shouldRender) {
-            [[FUTestRecorder shareRecorder] processFrameWithLog];
-            [FUDemoManager updateBeautyBlurEffect];
-            FURenderInput *input = [[FURenderInput alloc] init];
-            input.renderConfig.imageOrientation = FUImageOrientationUP;
-            input.pixelBuffer = pixelBuffer;
-            input.renderConfig.readBackToPixelBuffer = YES;
-            //开启重力感应，内部会自动计算正确方向，设置fuSetDefaultRotationMode，无须外面设置
-            input.renderConfig.gravityEnable = YES;
-            FURenderOutput *output = [[FURenderKit shareRenderKit] renderWithInput:input];
-            if(output){
-                [self.customVideoTrack pushPixelBuffer:output.pixelBuffer];
-            }
-        }else {
-            [self.customVideoTrack pushPixelBuffer:pixelBuffer];
-        }
-    }else{
-        
-        [self.customVideoTrack pushPixelBuffer:pixelBuffer];
-    }
-    
-}
-
-
 - (void)dealloc {
+    [self removeNotification];
     
     if (self.isuseFU) {
     
         /// FU 销毁道具
         [FUDemoManager destory];
     }
-    
-    [self removeNotification];
 }
 
-//- (void)localVideoTrack:(QNLocalVideoTrack *)localVideoTrack didGetPixelBuffer:(CVPixelBufferRef)pixelBuffer{
-//    if (self.isuseFU) {
-//        [[FUDemoManager shared] checkAITrackedResult];
-//        if ([FUDemoManager shared].shouldRender) {
-//            [[FUTestRecorder shareRecorder] processFrameWithLog];
-//            [FUDemoManager updateBeautyBlurEffect];
-//            FURenderInput *input = [[FURenderInput alloc] init];
-//            input.renderConfig.imageOrientation = FUImageOrientationUP;
-//            input.pixelBuffer = pixelBuffer;
-//            input.renderConfig.readBackToPixelBuffer = YES;
-//            //开启重力感应，内部会自动计算正确方向，设置fuSetDefaultRotationMode，无须外面设置
-//            input.renderConfig.gravityEnable = YES;
-//            FURenderOutput *output = [[FURenderKit shareRenderKit] renderWithInput:input];
-//
-//        }
-//
-//    }
-//}
+- (void)localVideoTrack:(QNLocalVideoTrack *)localVideoTrack didGetPixelBuffer:(CVPixelBufferRef)pixelBuffer{
+    if (self.isuseFU) {
+        if(fuIsLibraryInit() > 0){
+            [[FUDemoManager shared] checkAITrackedResult];
+            if ([FUDemoManager shared].shouldRender) {
+                [[FUTestRecorder shareRecorder] processFrameWithLog];
+                [FUDemoManager updateBeautyBlurEffect];
+                FURenderInput *input = [[FURenderInput alloc] init];
+                input.renderConfig.imageOrientation = FUImageOrientationUP;
+                input.pixelBuffer = pixelBuffer;
+                input.renderConfig.readBackToPixelBuffer = YES;
+                //开启重力感应，内部会自动计算正确方向，设置fuSetDefaultRotationMode，无须外面设置
+                input.renderConfig.gravityEnable = YES;
+                FURenderOutput *output = [[FURenderKit shareRenderKit] renderWithInput:input];
+                
+            }
+        }
+
+    }
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -292,33 +251,31 @@ UITextFieldDelegate
 }
 
 - (void)setupClient {
-//    [QNRTC enableFileLogging];
+    [QNRTC setLogConfig:[QNRTCLogConfiguration defaultRTCLogConfig]];
     
+    QNRTCConfiguration *rtcConfig = [[QNRTCConfiguration alloc] initWithPolicy:QNRTCPolicyForceUDP audioScene:[_senceValue intValue] reconnectionTimeout:30000 encoderType:[self.wareValue intValue]];
     // 1. 初始配置 QNRTC
-    [QNRTC initRTC:[QNRTCConfiguration defaultConfiguration]];
-    // 1.创建初始化 RTC 核心类 QNRTCClient
+    [QNRTC initRTC:rtcConfig];
+    
+    // 2.创建初始化 RTC 核心类 QNRTCClient
     self.client = [QNRTC createRTCClient];
-    // 2.设置 QNRTCClientDelegate 状态回调的代理
+    // 3.设置 QNRTCClientDelegate 状态回调的代理
     self.client.delegate = self;
     
-    // 3.创建摄像头 Track
-//    QNVideoEncoderConfig *config = [[QNVideoEncoderConfig alloc] initWithBitrate:self.bitrate videoEncodeSize:self.videoEncodeSize videoFrameRate:self.frameRate];
-//    QNCameraVideoTrackConfig * cameraConfig = [[QNCameraVideoTrackConfig alloc] initWithSourceTag:cameraTag config:config];
-//    self.cameraTrack = [QNRTC createCameraVideoTrackWithConfig:cameraConfig];
-
-    // 创建外部导入视频Track
-    QNVideoEncoderConfig *config = [[QNVideoEncoderConfig alloc] initWithBitrate:self.bitrate videoEncodeSize:self.videoEncodeSize videoFrameRate:self.frameRate];
-    QNCustomVideoTrackConfig *customVideoTrackConfig = [[QNCustomVideoTrackConfig alloc] initWithSourceTag:@"custom" config:config];
-    self.customVideoTrack = [QNRTC createCustomVideoTrackWithConfig:customVideoTrackConfig];
+    // 4.创建摄像头 Track
+    QNVideoEncoderConfig *config = [[QNVideoEncoderConfig alloc] initWithBitrate:self.bitrate videoEncodeSize:self.videoEncodeSize videoFrameRate:self.frameRate preference:[_preferValue intValue]];
+    QNCameraVideoTrackConfig * cameraConfig = [[QNCameraVideoTrackConfig alloc] initWithSourceTag:cameraTag config:config];
+    self.cameraTrack = [QNRTC createCameraVideoTrackWithConfig:cameraConfig];
     
-    // 4.设置摄像头采集相关配置
-//    // 视频采集分辨率
-//    self.cameraTrack.videoFormat = AVCaptureSessionPreset1280x720;
-//    // 视频帧率
-//    self.cameraTrack.videoFrameRate = self.frameRate;
-//    // 打开 sdk 自带的美颜效果
-//    [self.cameraTrack setBeautifyModeOn:NO];
-//    self.cameraTrack.delegate = self;
+    // 5.设置摄像头采集相关配置
+    // 视频采集分辨率
+    self.cameraTrack.videoFormat = AVCaptureSessionPreset1280x720;
+    // 视频帧率
+    self.cameraTrack.videoFrameRate = self.frameRate;
+    // 打开 sdk 自带的美颜效果
+//    [self.cameraTrack setBeautifyModeOn:YES];
+    
+    self.cameraTrack.delegate = self;
     
 //    self.cameraTrack.previewMirrorFrontFacing = YES;
 //    self.cameraTrack.previewMirrorRearFacing = NO;
@@ -326,13 +283,13 @@ UITextFieldDelegate
 //    self.cameraTrack.encodeMirrorFrontFacing = YES;
     
     // 设置预览
-    self.preview.fillMode = QNVideoFillModePreserveAspectRatioAndFill;
-    [self.customVideoTrack play:self.preview];
+    self.preview.fillMode = QNVideoFillModePreserveAspectRatio;
+    [self.cameraTrack play:self.preview];
     
     [self.colorView addSubview:self.preview];
     [self.renderBackgroundView addSubview:self.colorView];
     
-    // 4.设置摄像头采集的预览视频位置
+    // 6.设置摄像头采集的预览视频位置
     [self.preview mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self.colorView);
     }];
@@ -345,11 +302,10 @@ UITextFieldDelegate
         make.edges.equalTo(self.view);
     }];
     
-    // 5.启动摄像头采集
+    // 7.启动摄像头采集
     // 注意：记得在 Info.list 中添加摄像头、麦克风的相关权限
     // NSCameraUsageDescription、NSMicrophoneUsageDescription
-//    [self.cameraTrack startCapture];
-    [self.mCamera startCapture];
+    [self.cameraTrack startCapture];
 }
 
 - (void)setupBottomButtons {
@@ -694,14 +650,16 @@ UITextFieldDelegate
 
 - (void)beautyButtonClick:(UIButton *)beautyButton {
     beautyButton.selected = !beautyButton.selected;
-//    [self.cameraTrack setBeautifyModeOn:beautyButton.selected];
+    [self.cameraTrack setBeautifyModeOn:beautyButton.selected];
 }
 
 - (void)toggleButtonClick:(UIButton *)button {
     // 切换摄像头（前置/后置）
-//    [self.cameraTrack switchCamera];
-    button.selected = !button.selected;
-    [self.mCamera changeCameraInputDeviceisFront:!button.selected];
+    [self.cameraTrack switchCamera:^(BOOL isFrontCamera, NSString *errorMessage) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.view showTip:[NSString stringWithFormat:@"切换到 %@-%@!", isFrontCamera ? @"前置": @"后置", errorMessage ? @"失败": @"成功"]];
+        });
+    }];
 }
 
 - (void)microphoneAction:(UIButton *)microphoneButton {
@@ -772,7 +730,7 @@ UITextFieldDelegate
             self.directConfig.streamID = self.roomName;
             self.directConfig.publishUrl = [NSString stringWithFormat:@"rtmp://pili-publish.qnsdk.com/sdk-live/%@?serialnum=%@", self.roomName, @(self.serialNum)];
             self.directConfig.audioTrack = self.audioTrack;
-            self.directConfig.videoTrack = self.customVideoTrack ? self.customVideoTrack : self.screenTrack;
+            self.directConfig.videoTrack = self.cameraTrack ? self.cameraTrack : self.screenTrack;
             [self.client startLiveStreamingWithDirect:self.directConfig];
         } else {
             [self.client stopLiveStreamingWithDirect:self.directConfig];
@@ -792,7 +750,7 @@ UITextFieldDelegate
     
     __weak typeof(self) weakSelf = self;
     // track 可通过 QNTrack 配置
-    [self.client publish:@[self.audioTrack, self.customVideoTrack] completeCallback:^(BOOL onPublished, NSError *error) {
+    [self.client publish:@[self.audioTrack, self.cameraTrack] completeCallback:^(BOOL onPublished, NSError *error) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (onPublished) {
                 [weakSelf.view showSuccessTip:@"发布成功了"];
@@ -801,7 +759,7 @@ UITextFieldDelegate
                 weakSelf.videoButton.enabled = YES;
                 weakSelf.isVideoPublished = YES;
                 
-                [weakSelf.transcodingStreamingSettingView addTranscodingStreamingInfoWithTracks:@[weakSelf.audioTrack, weakSelf.customVideoTrack] userId:weakSelf.userId];
+                [weakSelf.transcodingStreamingSettingView addTranscodingStreamingInfoWithTracks:@[weakSelf.audioTrack, weakSelf.cameraTrack] userId:weakSelf.userId];
                 [weakSelf.transcodingStreamingSettingView resetTranscodingStreamingFrame];
                 [weakSelf.transcodingStreamingSettingView resetUserList];
             }
@@ -1075,6 +1033,7 @@ UITextFieldDelegate
     QNTrack *track = [userView trackInfoWithTrackId:videoTrack.trackID];
     
     QNVideoGLView * renderView =  [track.tag isEqualToString:screenTag] ? userView.screenView : userView.cameraView;
+    renderView.fillMode = QNVideoFillModePreserveAspectRatio;
     [videoTrack play:renderView];
 }
 
